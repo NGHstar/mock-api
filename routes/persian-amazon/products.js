@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/", (req, res) => {
   fs.readFile("./data/products.json", "utf8", (err, data) => {
     if (err) {
-      return res.status(500).json({ error: "مشکل در خواندن فایل محصولات" });
+      return res.status(500).json({ error: err.message });
     }
     res.json(JSON.parse(data));
   });
