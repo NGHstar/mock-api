@@ -5,7 +5,7 @@ const path = require("path");
 const router = express.Router();
 
 // مسیر فایل JSON محصولات
-const PRODUCTS_FILE = path.join(__dirname, "../data/products.json");
+const PRODUCTS_FILE = path.join(__dirname, "data", "products.json");
 
 // تابع کمکی برای محاسبه هزینه ارسال
 const getDeliveryCost = (deliveryOptionId) => {
