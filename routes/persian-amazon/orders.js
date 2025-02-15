@@ -1,9 +1,11 @@
 const express = require("express");
-const axios = require("axios"); // برای دریافت محصولات از API
+const fs = require("fs");
+const path = require("path");
+
 const router = express.Router();
 
-const PRODUCTS_API =
-  "https://mock-api-zeta-liard.vercel.app/persian-amazon/products";
+// مسیر فایل JSON محصولات
+const PRODUCTS_FILE = path.join(__dirname, "../data/products.json");
 
 // تابع کمکی برای محاسبه هزینه ارسال
 const getDeliveryCost = (deliveryOptionId) => {
@@ -28,18 +30,22 @@ const getEstimatedDelivery = (deliveryOptionId) => {
   return estimatedDate.toISOString();
 };
 
-router.post("/", async (req, res) => {
+router.post("/", (req, res) => {
   const { cart } = req.body;
 
   if (!cart || !cart.items || !Array.isArray(cart.items)) {
     return res.status(400).json({ error: "Invalid request format" });
   }
 
-  try {
-    // دریافت لیست محصولات از API
-    const { data: products } = await axios.get(PRODUCTS_API);
+  // خواندن اطلاعات از فایل JSON
+  fs.readFile(PRODUCTS_FILE, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to read product data" });
+    }
 
+    const products = JSON.parse(data);
     let total = 0;
+
     const productsResponse = cart.items.map((item) => {
       const product = products.find((p) => p.id === item.productId);
       if (!product) {
@@ -48,7 +54,7 @@ router.post("/", async (req, res) => {
           .json({ error: `Product not found: ${item.productId}` });
       }
 
-      // قیمت کل محصول (قیمت واحد × تعداد)
+      // محاسبه قیمت کل هر محصول (قیمت × تعداد)
       const productTotal = product.price * item.quantity;
       total += productTotal;
 
@@ -64,7 +70,7 @@ router.post("/", async (req, res) => {
 
     // اضافه کردن مالیات ۱۰٪
     total += total * 0.1;
-    total = Math.round(total); // گرد کردن مبلغ نهایی
+    total = Math.round(total); // گرد کردن عدد نهایی
 
     res.json({
       id: Math.random().toString(36).substr(2, 9),
@@ -72,9 +78,7 @@ router.post("/", async (req, res) => {
       total,
       products: productsResponse,
     });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch product data" });
-  }
+  });
 });
 
 module.exports = router;
