@@ -42,7 +42,7 @@ router.post("/", (req, res) => {
   // خواندن اطلاعات از فایل JSON
   fs.readFile(PRODUCTS_FILE, "utf8", (err, data) => {
     if (err) {
-      return res.status(500).json({ error: "Failed to read product data" });
+      return res.status(500).json({ error: err.message });
     }
 
     const products = JSON.parse(data);
