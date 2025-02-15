@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "persian-amazon/**/*.php": { "runtime": "vercel-php@0.6.0" }
+  },
+  "routes": [
+    { "src": "/(.*)", "dest": "persian-amazon/orders/index.php" },
+    { "src": "/(.*)", "dest": "persian-amazon/products/index.php" }
+  ]
+}
