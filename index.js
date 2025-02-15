@@ -8,8 +8,14 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/persian-amazon/orders", require("./routes/orders"));
-app.use("/api/persian-amazon/products", require("./routes/products"));
+app.use(
+  "/api/persian-amazon/orders",
+  require("./routes/persian-amazon/orders")
+);
+app.use(
+  "/api/persian-amazon/products",
+  require("./routes/persian-amazon/products")
+);
 
 if (process.env.NODE_ENV !== "production") {
   app.listen(port, () => {
