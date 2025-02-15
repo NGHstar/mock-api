@@ -1,24 +1,36 @@
 const express = require("express");
 const router = express.Router();
 
-router.post("/", (req, res) => {
-  const { cart } = req.body;
+// تابع کمکی برای محاسبه زمان تحویل
+const getEstimatedDelivery = (deliveryOptionId) => {
+  const deliveryDays = {
+    1: 7, // یک هفته بعد
+    2: 3, // سه روز بعد
+    3: 1, // فردا
+  };
 
-  if (!cart || !Array.isArray(cart)) {
+  const daysToAdd = deliveryDays[deliveryOptionId] || 7; // پیش‌فرض ۷ روزه
+  const estimatedDate = new Date();
+  estimatedDate.setDate(estimatedDate.getDate() + daysToAdd);
+
+  return estimatedDate.toISOString();
+};
+
+router.post("/", (req, res) => {
+  const { items } = req.body;
+
+  if (!items || !Array.isArray(items)) {
     return res.status(400).json({ error: "Invalid request format" });
   }
 
   const orderId = Math.random().toString(36).substr(2, 9);
   const orderTime = new Date().toISOString(); // فرمت استاندارد
-  const estimatedDelivery = new Date(
-    Date.now() + 2 * 24 * 60 * 60 * 1000
-  ).toISOString();
   const total = 5800; // مقدار ثابت
 
-  const products = cart.map((item) => ({
+  const products = items.map((item) => ({
     productId: item.productId,
     quantity: item.quantity,
-    estimatedDeliveryTime: estimatedDelivery,
+    estimatedDeliveryTime: getEstimatedDelivery(item.deliveryOptionId),
   }));
 
   res.json({
