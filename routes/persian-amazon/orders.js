@@ -7,6 +7,8 @@ const router = express.Router();
 // مسیر فایل JSON محصولات
 const PRODUCTS_FILE = path.join(__dirname, "data", "products.json");
 
+console.log(PRODUCTS_FILE);
+
 // تابع کمکی برای محاسبه هزینه ارسال
 const getDeliveryCost = (deliveryOptionId) => {
   const deliveryCosts = {
